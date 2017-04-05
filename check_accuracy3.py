@@ -13,8 +13,8 @@ def check_accuracy(file_name_ans, file_name_out):
     ans.close()
     output.close()
     
-    print(correct_count)
-    print(correct_count / num_of_reviews)
+    print(correct_count, 'out of', num_of_reviews, 'novels are classified correctly.')
+    print('the accuracy is', correct_count / num_of_reviews)
 
 if __name__ == '__main__':
     file_name_ans = sys.argv[-2]

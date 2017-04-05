@@ -33,7 +33,7 @@ $ ./run.sh tag_file novel_file
 
 If permission denied, change permission:
 ```sh
-$ chmod 777 run.sh
+$ chmod +x run.sh
 ```
 
 ### Development / Collaboration
