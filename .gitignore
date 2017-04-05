@@ -1,0 +1,6 @@
+*.seg
+*.dev
+*.test
+*.out
+*.model
+
