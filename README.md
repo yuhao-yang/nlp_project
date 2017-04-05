@@ -52,7 +52,7 @@ $ git status
 ```
 You should see new changes made to the directory.
 
-Add the change to local branch:
+Add the change:
 ```sh
 $ git add .
 ```
@@ -61,9 +61,9 @@ Check it again:
 ```sh
 $ git status
 ```
-You should see the change in local branch is ready to commit.
+You should see the change in directory is ready to commit to local branch.
 
-Push to remote branch with comment:
+Add comment and commit in local branch:
 ```sh
 $ git commit -m "Your comment message"
 ```
@@ -74,6 +74,10 @@ $ git status
 ```
 You should see "nothing to commit".
 
+Push to remote branch:
+```sh
+$ git push origin master
+```
 
 ### Todos
 
