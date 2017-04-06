@@ -40,11 +40,17 @@ $ chmod +x run.sh
 
 Open your favorite Terminal and run these commands.
 
-First Tab:
+First time:
 ```sh
 $ git clone https://github.com/yuhao-yang/nlp_project.git
 ```
 to clone the remote branch to current directory.
+
+Otherwise:
+```sh
+$ git pull origin master
+```
+to get the lastest version
 
 After making some changes in local branch, check it:
 ```sh
