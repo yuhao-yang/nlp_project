@@ -2,41 +2,57 @@ import os
 import random
 import sys
 
-def generate_data(file_tag, file_novel, file_tag_dev, file_novel_dev, file_tag_test, file_novel_test):
+def generate_data(file_tag, file_novels, file_tag_dev, file_novels_dev, file_tag_test, file_novels_test):
 
     data = []
     
-    with open(file_tag, 'r') as tag, open(file_novel, 'r') as novel:
-        for line_tag in tag:
-            line_novel = novel.readline()
-            data.append([line_tag, line_novel])
+    tag = open(file_tag, 'r')
+    novels = [open(file_novel, 'r') for file_novel in file_novels]
+    for line_tag in tag:
+        line_data = [line_tag]
+        for novel in novels:
+            line_data.append(novel.readline())
+        data.append(line_data)
     tag.close()
-    novel.close()
+    for novel in novels:
+        novel.close()
     
     random.shuffle(data)
     
     # 80% of data for training.
-    with open(file_tag_dev, 'w') as tag, open(file_novel_dev, 'w') as novel:
-        for i in range(int(0.8 * len(data))):
-            tag.write(data[i][0])
-            novel.write(data[i][1])
+    tag = open(file_tag_dev, 'w')
+    novels = [open(file_novel_dev, 'w') for file_novel_dev in file_novels_dev]
+    for i in range(int(0.8 * len(data))):
+        tag.write(data[i][0])
+        for j in range(len(novels)):
+            novels[j].write(data[i][1 + j])
     tag.close()
-    novel.close()
+    for novel in novels:
+        novel.close()
     
     # 20% of data fot testing.
-    with open(file_tag_test, 'w') as tag, open(file_novel_test, 'w') as novel:
-        for i in range(int(0.8 * len(data)), len(data)):
-            tag.write(data[i][0])
-            novel.write(data[i][1])
+    tag = open(file_tag_test, 'w')
+    novels = [open(file_novel_test, 'w') for file_novel_test in file_novels_test]
+    for i in range(int(0.8 * len(data)), len(data)):
+        tag.write(data[i][0])
+        for j in range(len(novels)):
+            novels[j].write(data[i][1 + j])
     tag.close()
-    novel.close()
+    for novel in novels:
+        novel.close()
 
 if __name__ == '__main__':
-    file_tag = sys.argv[-6]
-    file_novel = sys.argv[-5]
-    file_tag_dev = sys.argv[-4]
-    file_novel_dev = sys.argv[-3]
-    file_tag_test = sys.argv[-2]
-    file_novel_test = sys.argv[-1]
+    print(sys.argv)
+    num_of_features = 1
+    start = 0
+    if (len(sys.argv) > 7):
+        num_of_features = sys.argv[1]
+        start = 1
+    file_tag = sys.argv[start + 1]
+    file_novels = sys.argv[start + 2:start + 2 + num_of_features]
+    file_tag_dev = sys.argv[start + 2 + num_of_features]
+    file_novels_dev = sys.argv[start + 2 + num_of_features + 1: start + 2 + 2 * num_of_features + 1]
+    file_tag_test = sys.argv[start + 2 + 2 * num_of_features + 1]
+    file_novels_test = sys.argv[start + 2 + 2 * num_of_features + 2:start + 2 + 3 * num_of_features + 2]
     
-    generate_data(file_tag, file_novel, file_tag_dev, file_novel_dev, file_tag_test, file_novel_test)
+    generate_data(file_tag, file_novels, file_tag_dev, file_novels_dev, file_tag_test, file_novels_test)
