@@ -5,22 +5,27 @@ import os
 import string
 import sys
 
-def nblearn(file_name_novels, file_name_tags, file_name_parameters):
-    # Initializations.
+def nblearn(file_name_novels, file_name_tags, file_name_parameters, file_tag_list):
+    # All English and Chinese punctuations
     punctuations = string.punctuation + '+——！，。？、~@#￥%……&*（）：；《）《》“”()»〔〕-【】'
-    # Record the number of reviews in training the data.
-    num_of_reviews = 0
-    # Record the number of words for each tag after smoothing.
-    num_of_words = {'city' : 0, 'sports' : 0, 'kongfu' : 0, 'ACG' : 0}
-    # Record the number of reviews belongs to each tag.
-    tag_count = {'city' : 0, 'sports' : 0, 'kongfu' : 0, 'ACG' : 0}
+    # Record the number of novels in training the data.
+    num_of_novels = 0
     # Record the number of occurences for given word and tag after smoothing. Access with word_count[word][tag].
     word_count = {}
+    # List all tags in training data.
+    tags = []
+    with open(file_tag_list, 'r') as tag_list:
+        tags = json.loads(tag_list.readline().rstrip())
+    tag_list.close()
+    # Record the number of words for each tag after smoothing.
+    num_of_words = dict.fromkeys(tags, 0)
+    # Record the number of reviews belongs to each tag.
+    tag_count = dict.fromkeys(tags, 1)
     
     # Read title/abstract/content and tags from files and count words.
     with open(file_name_novels, 'r') as novels_in, open(file_name_tags, 'r') as tags_in:
         for line in novels_in:
-            num_of_reviews += 1
+            num_of_novels += 1
             tag = tags_in.readline().rstrip()
             tag_count[tag] += 1
             
@@ -39,8 +44,8 @@ def nblearn(file_name_novels, file_name_tags, file_name_parameters):
     tags_in.close()
     
     # Construct NB model.
-    prior_probabilities = {tag : math.log2(tag_count[tag] / num_of_reviews) for tag in tag_count}
-    probabilities = {word : {tag : math.log2(word_count[word][tag] / num_of_words[tag]) for tag in tag_count} for word in word_count}
+    prior_probabilities = {tag : math.log2(tag_count[tag] / num_of_novels) for tag in tags}
+    probabilities = {word : {tag : math.log2(word_count[word][tag] / num_of_words[tag]) for tag in tags} for word in word_count}
     
     # Write parameters to file.
     with open(file_name_parameters, 'w') as f:
@@ -52,8 +57,9 @@ def nblearn(file_name_novels, file_name_tags, file_name_parameters):
 
 if __name__ == '__main__':
     # Read file names from commond line.
-    file_name_novels = sys.argv[-3]
-    file_name_tags = sys.argv[-2]
-    file_name_parameters = sys.argv[-1]
+    file_name_novels = sys.argv[-4]
+    file_name_tags = sys.argv[-3]
+    file_name_parameters = sys.argv[-2]
+    file_name_tag_list = sys.argv[-1]
     
-    nblearn(file_name_novels, file_name_tags, file_name_parameters)
+    nblearn(file_name_novels, file_name_tags, file_name_parameters, file_name_tag_list)

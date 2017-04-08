@@ -5,9 +5,8 @@ def check_accuracy(file_name_ans, file_name_out):
     correct_count = 0
     
     with open(file_name_ans, 'r') as ans, open(file_name_out, 'r') as output:
-        for ans_line in ans:
+        for ans_line, output_line in zip(ans, output):
             num_of_reviews += 1
-            output_line = output.readline()
             if ans_line == output_line:
                 correct_count += 1
     ans.close()
