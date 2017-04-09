@@ -36,6 +36,11 @@ If permission denied, change permission:
 $ chmod +x run.sh
 ```
 
+or:
+```sh
+$ sh run.sh tag_file novel_file
+```
+
 ### Development / Collaboration
 
 Open your favorite Terminal and run these commands.
@@ -87,6 +92,5 @@ $ git push origin master
 
 ### Todos
 
- - data crawler
- - nerual network
- - neural network connection
+ - better data crawler (more data, even data)
+ - nerual network update (more accuracy)
