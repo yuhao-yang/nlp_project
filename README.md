@@ -26,19 +26,16 @@ $ pip install pybrain
 
 ### Running
 
-Simply use run.sh:
+Simply use run3.py to get the result of NB model:
 ```sh
-$ ./run.sh tag_file novel_file
+$ python3 run3.py data/tag.txt data/title.txt
+$ python3 run3.py data/tag.txt data/abs.txt
+$ python3 run3.py data/tag.txt data/content.txt
 ```
 
-If permission denied, change permission:
+Simply use nn.py to get the result of NN model:
 ```sh
-$ chmod +x run.sh
-```
-
-or:
-```sh
-$ sh run.sh tag_file novel_file
+$ python nn.py data/tag.txt.list data/tag.txt.test data/title.txt.prob data/abs.txt.prob data/content.txt.prob
 ```
 
 ### Development / Collaboration
