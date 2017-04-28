@@ -4,7 +4,7 @@ Using Naive Bayes and Neural Network to classify novels.
 
 ### Features
 
-  - Predicting novel classification based on statistical information
+- Predicting novel classification based on statistical information
 
 ### Tech
 
@@ -92,5 +92,6 @@ $ git push origin master
 
 ### Todos
 
- - better data crawler (more data, even data)
- - nerual network update (more accuracy)
+- nerual network update (more accuracy)
+- nerual network connection (with the Automation Scripts)
+- training , test set reallocate

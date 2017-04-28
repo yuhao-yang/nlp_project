@@ -3,8 +3,8 @@
 # Using neural network to map 3 features classification probabilities -> class
 # input: 3 feature file + 1 tag file (same row = same novel)
 # ouput: test set result & accuracy from input (0.2)
-# Usage: python real.py all_tag_file_path tag_file_path feature_file1_path feature_file2_path feature_file3_path
-# here: python real.py tag.txt.list tag.txt.test title.txt.prob abs.txt.prob content.txt.prob
+# Usage: python nn.py all_tag_file_path tag_file_path feature_file1_path feature_file2_path feature_file3_path
+# here: python nn.py data/tag4.txt.list data/tag4.txt.test data/title4.txt.prob data/abs4.txt.prob data/content4.txt.prob
 
 from pybrain.structure import *
 from pybrain.supervised.trainers import BackpropTrainer
@@ -14,6 +14,7 @@ import math
 import sys
 from pybrain.structure.modules.neuronlayer import NeuronLayer
 from pybrain.tools.shortcuts import buildNetwork
+import io
 
 '''class StepLayer(NeuronLayer):
     
@@ -60,7 +61,7 @@ def formNN(tag_num, ds):
     print "Training..."
     trainer = BackpropTrainer(fnn, ds, verbose = False, learningrate = 0.01) # , momentum = 0.99
     #trainer.trainUntilConvergence(trainingData = ds, validationData = ds, verbose = True, maxEpochs=1000)
-    for epoch in range(0, 100000):
+    for epoch in range(0, 1000):
         error = trainer.train()
         if error < 0.001:
             break
@@ -78,39 +79,37 @@ def getData(all_tag, tag_file, feature_file1, feature_file2, feature_file3):
     # get number of tags from all_tag_file
     print "Getting all tags/classes..."
     tag_num = 0
-    with open(all_tag, 'r') as f:
+    with io.open(all_tag, mode = 'r', encoding = 'utf-8') as f:
         tag_num = len(json.loads(f.readline().rstrip()))
-    f.close()
 
     # add tag info([0, 1, 0, 0...]) to data matrix
     # can be moved in all_tag section
     print "Getting tag info for each records..."
     tags = {} # {tag1: 1; tag2: 2}, tag and its position (in appearing order)
     #tag_goto_num = {}
-    with open(tag_file, 'r') as f:
+    with io.open(tag_file, mode = 'r', encoding = 'utf-8') as f:
         i = 0
         j = 0
         # add a tuple per line
         for line in f:
             data.append([])
-            tag = str(line.rstrip()).decode('utf-8')    # str to utf-8
+            tag = line.rstrip()
             out = [0] * tag_num
             try:
                 out[tags[tag]] = 1  # only the position of the tag is given 1, others is still 0
-                #tag_goto_num[tag] += 1
+            #tag_goto_num[tag] += 1
             except KeyError:    # no such key(tag): add to map and give it a position number in increasing order
                 tags[tag] = j
                 j += 1
                 out[tags[tag]] = 1
-                #tag_goto_num[tag] = 0
+            #tag_goto_num[tag] = 0
             data[i].extend(out)
             i += 1
     #print tag_goto_num
-    f.close()
 
-    # get tag probability of each feature and add to data matrix
-    print "Getting tag probabilities from each feature..."
-    with open(feature_file1, 'r') as f1, open(feature_file2, 'r') as f2, open(feature_file3, 'r') as f3:
+# get tag probability of each feature and add to data matrix
+print "Getting tag probabilities from each feature..."
+    with io.open(feature_file1, mode = 'r', encoding = 'utf-8') as f1, io.open(feature_file2, mode = 'r', encoding = 'utf-8') as f2, io.open(feature_file3, mode = 'r', encoding = 'utf-8') as f3:
         line = f1.readline()
         i = 0
         while (line):
@@ -126,11 +125,8 @@ def getData(all_tag, tag_file, feature_file1, feature_file2, feature_file3):
             
             line = f1.readline()
             i += 1
-    f1.close()
-    f2.close()
-    f3.close()
 
-    return tag_num, data
+return tag_num, data
 
 # normalize tag probabilities
 def norm(tag_num, data):
@@ -140,17 +136,17 @@ def norm(tag_num, data):
     for i in range(tag_num, end):   # row
         # get max, min and range
         '''max = data[0][i]
-        min = data[0][i]
-        for j in range(data_length):    # column
+            min = data[0][i]
+            for j in range(data_length):    # column
             if data[j][i] > max:
-                max = data[j][i]
+            max = data[j][i]
             elif data[j][i] < min:
-                min = data[j][i]
-        ran = max - min
-        
-        # normalize to 0 ~ 1
-        for j in range(data_length):
-        data[j][i] = (data[j][i] - min) / ran'''
+            min = data[j][i]
+            ran = max - min
+            
+            # normalize to 0 ~ 1
+            for j in range(data_length):
+            data[j][i] = (data[j][i] - min) / ran'''
         
         sum = 0
         std = 0
@@ -158,16 +154,16 @@ def norm(tag_num, data):
         for j in range(data_length):
             sum += data[j][i];
         mean = sum / float(data_length)
-
+        
         # get standard deviation
         for j in range(data_length):
             std += pow(data[j][i] - mean, 2);
 
-        #!! only to training set!: normalize test set using mean and std of training set
-        # normalization
-        for j in range(data_length):
-            data[j][i] = (data[j][i] - mean) / std;
-
+#!! only to training set!: normalize test set using mean and std of training set
+# normalization
+for j in range(data_length):
+    data[j][i] = (data[j][i] - mean) / std;
+    
     return data
 
 
@@ -179,7 +175,7 @@ def buildDS(tag_num, data):
     ds = SupervisedDataSet(tag_num * 3, tag_num)
     
     for ele in data:
-    #ds.addSample((ele[4], ele[5], ele[6], ele[7], ele[8], ele[9], ele[10], ele[11], ele[12], ele[13], ele[14], ele[15]), (ele[0], ele[1], ele[2], ele[3]))  # 4-tag_num * 3: prob of each feature (in), 0-3: tag info (out)
+        #ds.addSample((ele[4], ele[5], ele[6], ele[7], ele[8], ele[9], ele[10], ele[11], ele[12], ele[13], ele[14], ele[15]), (ele[0], ele[1], ele[2], ele[3]))  # 4-tag_num * 3: prob of each feature (in), 0-3: tag info (out)
         ds.addSample(ele[tag_num:], ele[:tag_num])
     
     # split to training and setting
@@ -193,19 +189,19 @@ if __name__ == '__main__':
         sys.exit()
     '''try:
         all_tag_file_path, tag_file_path, feature_file1_path, feature_file2_path, feature_file3_path = sys.argv[-5], sys.argv[-4], sys.argv[-3], sys.argv[-2], sys.argv[-1]
-    except IndexError:
+        except IndexError:
         print "parameter error! input format: "
         print "python real.py all_tag_file_path tag_file_path feature_file1_path feature_file2_path feature_file3_path"
         sys.exit()'''
     tag_num, data = getData(sys.argv[-5], sys.argv[-4], sys.argv[-3], sys.argv[-2], sys.argv[-1])
     data = norm(tag_num, data)
     dsTrain, dsTest = buildDS(tag_num, data)
-
+    
     print dsTest['input']
-
+    
     nn = formNN(tag_num, dsTrain)
     #dsTest = dsTrain
-
+    
     tot_err = 0
     corr_sum = 0
     #!! why the results are the same?! no normalization, data bias
@@ -226,23 +222,23 @@ if __name__ == '__main__':
         for j in range(tag_num):
             '''if res.tolist()[j] > 0.5:
                 step_res.append(1)
-            else:
+                else:
                 step_res.append(0)'''
             '''step_res.append(res.tolist()[j])'''
             if list_res[j] > max:
                 #print 'list_res[j] =', list_res[j], 'max =', max, 'this_posi =', j
                 max = list_res[j]
                 max_posi = j
-            #error += pow(dsTest['target'][i][j] - step_res[-1], 2)
+        #error += pow(dsTest['target'][i][j] - step_res[-1], 2)
         step_res[max_posi] = 1
         if list_tar[max_posi] != 1:
             error = 2
-        #if error:
+            #if error:
             tot_err += error
-        else:
-            corr_sum += 1
-        '''print "Should be: ", list_tar,
-        print ", the result is: ", step_res'''
-        #print "error: ", error
-    print "total error:", tot_err
+                else:
+                    corr_sum += 1
+                        '''print "Should be: ", list_tar,
+                            print ", the result is: ", step_res'''
+                    #print "error: ", error
+print "total error:", tot_err
     print "total_correct:", corr_sum, ", accuracy: ", str(float(corr_sum) / float(len(dsTest['input'])))
