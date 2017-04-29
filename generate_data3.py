@@ -4,8 +4,9 @@ import random
 import sys
 
 def generate_data(file_tag, file_novels, file_tag_dev, file_novels_dev, file_tag_test, file_novels_test, file_tag_list, ratio=5):
+    # ratio: training(ratio) : testing(2)
     if ratio < 2:
-        print('Invalid ratio! Ratio should be a integer graater than or eaqual to 2!')
+        print('Invalid ratio! Ratio should be a integer greater than or eaqual to 2!')
         return
     
     counter = 0

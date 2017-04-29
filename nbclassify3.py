@@ -1,3 +1,9 @@
+# Zixuan Zhang
+# 170428
+# Random model: baseline
+# input: tag probabilities, 
+# ouput: tag probabilities
+
 import copy
 import json
 import math

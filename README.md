@@ -26,14 +26,12 @@ $ pip install pybrain
 
 ### Running
 
-Simply use run3.py to get the result of NB model:
+Run run3.py to get the result of NB model (for every feature and overall):
 ```sh
-$ python3 run3.py data/tag.txt data/title.txt
-$ python3 run3.py data/tag.txt data/abs.txt
-$ python3 run3.py data/tag.txt data/content.txt
+$ python3 run3.py data/tag.txt data/title.txt data/abs.txt content.txt
 ```
 
-Simply use nn.py to get the result of NN model:
+Run nn.py to get the result of NN model:
 ```sh
 $ python nn.py data/tag.txt.list data/tag.txt.test data/title.txt.prob data/abs.txt.prob data/content.txt.prob
 ```

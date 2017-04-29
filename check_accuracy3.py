@@ -11,7 +11,8 @@ def check_accuracy(file_name_ans, file_name_out):
                 correct_count += 1
     ans.close()
     output.close()
-    
+
+    print('comparing ' + file_name_ans + ' and ' + file_name_out + ': ')
     print(correct_count, 'out of', num_of_reviews, 'novels are classified correctly.')
     print('the accuracy is', correct_count / num_of_reviews)
 

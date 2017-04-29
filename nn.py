@@ -182,6 +182,19 @@ def buildDS(tag_num, data):
     dsTrain, dsTest = ds.splitWithProportion(0.8)
     return dsTrain, dsTest
 
+def train_nn():
+    if len(sys.argv) != 6:
+        print "not enogh parameter! input: "
+        print "python real.py all_tag_file_path tag_file_path feature_file1_path feature_file2_path feature_file3_path"
+        sys.exit()
+        tag_num, data = getData(sys.argv[-5], sys.argv[-4], sys.argv[-3], sys.argv[-2], sys.argv[-1])
+        data = norm(tag_num, data)
+        dsTrain, dsTest = buildDS(tag_num, data)
+
+        print dsTest['input']
+
+        nn = formNN(tag_num, dsTrain)
+
 if __name__ == '__main__':
     if len(sys.argv) != 6:
         print "not enogh parameter! input: "
@@ -240,5 +253,5 @@ if __name__ == '__main__':
                         '''print "Should be: ", list_tar,
                             print ", the result is: ", step_res'''
                     #print "error: ", error
-print "total error:", tot_err
+    print "total error:", tot_err
     print "total_correct:", corr_sum, ", accuracy: ", str(float(corr_sum) / float(len(dsTest['input'])))
